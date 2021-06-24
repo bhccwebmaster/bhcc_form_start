@@ -1,0 +1,7 @@
+privacy_notice:
+  version: VERSION
+  js:
+    js/privacy_notice.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery

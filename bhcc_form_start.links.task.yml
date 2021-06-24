@@ -1,0 +1,11 @@
+bhcc_form_start.bhcc_form_start_config_form:
+  title: 'Configuration'
+  route_name: bhcc_form_start.bhcc_form_start_config_form
+  base_route: bhcc_form_start.bhcc_form_start_state_form
+  weight: 2
+
+bhcc_form_start.bhcc_form_start_state_form:
+  title: 'Toggle forms on / off'
+  route_name: bhcc_form_start.bhcc_form_start_state_form
+  base_route: bhcc_form_start.bhcc_form_start_state_form
+  weight: 1

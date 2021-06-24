@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains bhcc_form_start.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function bhcc_form_start_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the bhcc_form_start module.
+    case 'help.page.bhcc_form_start':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Form Start widget') . '</p>';
+      return $output;
+
+    default:
+  }
+}

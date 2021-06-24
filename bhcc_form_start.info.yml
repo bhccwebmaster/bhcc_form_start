@@ -1,0 +1,5 @@
+name: 'BHCC Form Start'
+type: module
+description: 'Form Start widget'
+core_version_requirement: ^8 || ^9
+package: 'BHCC'

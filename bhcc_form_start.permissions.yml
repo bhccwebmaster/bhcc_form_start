@@ -1,0 +1,6 @@
+access form start configuration:
+  title: 'Access form start Configuration'
+  restrict access: true
+toggle state of form start links:
+  title: 'Toggle state of form start links'
+  restrict access: true

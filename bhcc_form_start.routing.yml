@@ -1,0 +1,18 @@
+bhcc_form_start.bhcc_form_start_config_form:
+  path: '/admin/config/services/form-start/configuration'
+  defaults:
+    _form: '\Drupal\bhcc_form_start\Form\ConfigForm'
+    _title: 'BHCC Form Start Configuration'
+  requirements:
+    _permission: 'access form start configuration'
+  options:
+    _admin_route: TRUE
+bhcc_form_start.bhcc_form_start_state_form:
+  path: '/admin/config/services/form-start'
+  defaults:
+    _form: '\Drupal\bhcc_form_start\Form\StateForm'
+    _title: 'Switch on and off webforms'
+  requirements:
+    _permission: 'toggle state of form start links'
+  options:
+    _admin_route: TRUE
