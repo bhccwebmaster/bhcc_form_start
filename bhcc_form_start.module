@@ -22,3 +22,7 @@ function bhcc_form_start_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
+
+function _bhcc_form_start_migrate_callback_unserialize_options($value) {
+  return unserialize($value);
+}
