@@ -247,7 +247,7 @@ class FormStartFieldFormatter extends LinkFormatter {
 
     // Set attributes to render as a button.
     $attributes = [
-      'class' => 'button button--next button--success button--single',
+      'class' => 'button button--next button--success margin-top-x-large margin-bottom-x-large',
       'target' => '_blank',
     ];
     $url->setOption('attributes', $attributes);
