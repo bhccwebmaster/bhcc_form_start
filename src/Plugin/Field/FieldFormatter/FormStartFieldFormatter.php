@@ -66,10 +66,22 @@ class FormStartFieldFormatter extends LinkFormatter {
 
       // Create a new element with all info for privacy notice.
       // Text and checkbox.
-      $new_element[$delta]['link'] = $element[$delta];
+
+      // Add wrapper element for flex positioning.
+      $new_element[$delta]['link'] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => [
+            'flex',
+            'flex-justify-right',
+          ],
+        ],
+      ];
+
+      $new_element[$delta]['link']['elem'] = $element[$delta];
 
       // Add default link classes, disable the link by default.
-      $new_element[$delta]['link']['#options']['attributes']['class'] .= ' js-cta-button link-disabled js-link-disabled';
+      $new_element[$delta]['link']['elem']['#options']['attributes']['class'] .= ' js-cta-button link-disabled js-link-disabled';
 
       // Privacy notice text.
       $new_element[$delta]['privacy'] = [
@@ -247,7 +259,7 @@ class FormStartFieldFormatter extends LinkFormatter {
 
     // Set attributes to render as a button.
     $attributes = [
-      'class' => 'button button--next button--success button--single margin-top-x-large margin-bottom-x-large',
+      'class' => 'services-cta__item',
       'target' => '_blank',
     ];
     $url->setOption('attributes', $attributes);
