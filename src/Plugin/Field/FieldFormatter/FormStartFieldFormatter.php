@@ -73,7 +73,6 @@ class FormStartFieldFormatter extends LinkFormatter {
         '#attributes' => [
           'class' => [
             'flex',
-            'flex-justify-right',
           ],
         ],
       ];
