@@ -68,6 +68,17 @@ class FormStartFieldWidget extends LinkWidget {
       '#default_value' => $formValues['options']['message_to_display_with_privacy_notice']['value'] ?? NULL,
       '#format' => $formValues['options']['message_to_display_with_privacy_notice']['format'] ?? NULL,
     ];
+
+    // MyAccount extra parameters.
+    $module_handler = \Drupal::service('module_handler');
+    if ($module_handler->moduleExists('bhcc_myaccount')) {
+      $element['add_myaccount_url'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Generate a MyAccount link for this form.'),
+        '#default_value' => $formValues['options']['add_myaccount_url'] ?? NULL,
+      ];
+    }
+
     return $element;
 
   }
@@ -97,6 +108,11 @@ class FormStartFieldWidget extends LinkWidget {
       // Store privacy notice text.
       if (isset($value['message_to_display_with_privacy_notice'])) {
         $value['options']['message_to_display_with_privacy_notice'] = $value['message_to_display_with_privacy_notice'];
+      }
+
+      // Store MyAccount checkbox.
+      if (isset($value['add_myaccount_url'])) {
+        $value['options']['add_myaccount_url'] = $value['add_myaccount_url'];
       }
     }
     return $values;

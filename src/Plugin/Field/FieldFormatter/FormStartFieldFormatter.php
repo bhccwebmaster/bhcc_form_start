@@ -40,6 +40,15 @@ class FormStartFieldFormatter extends LinkFormatter {
 
       // Retrieve all the url/ information.
       $url = $item->getUrl();
+
+      // Attach JS to swap MyAccount form urls.
+      $module_handler = \Drupal::service('module_handler');
+      $add_myaccount_url = $url->getOption('add_myaccount_url');
+      if ($module_handler->moduleExists('bhcc_myaccount') && $add_myaccount_url) {
+        $element['#attached']['library'][] = 'bhcc_myaccount/myaccount_session';
+      }
+
+      // Get privacy notice.
       $use_privacy_notice = $url->getOption('use_privacy_notice');
       $message_to_display_with_privacy_notice = $url->getOption('message_to_display_with_privacy_notice')['value'] ?? NULL;
 
@@ -189,63 +198,20 @@ class FormStartFieldFormatter extends LinkFormatter {
    */
   protected function buildUrl(LinkItemInterface $item) {
 
+    // Get config.
+    // @todo use dependency injection to get config.
+    $config = \Drupal::config('bhcc_form_start.settings');
+
     // Use LinkFormmater to build a uri.
     $url = parent::buildUrl($item);
 
     // Check if use citizen ID is set.
+    // If so rewrite the url to the citizenform format,
+    // else return plain url.
+    $citizen_id_url = $config->get('citizen_id_start_url');
     $elementValue = $item->getValue();
-    if ($url->getOption('use_citizenid')) {
-      $url->setAbsolute(TRUE);
-
-      // Get url components.
-      $components = parse_url($url->toString());
-
-      // Get formstart Config
-      $config = \Drupal::config('bhcc_form_start.settings');
-
-      // Get entity
-      $entity = $item->getEntity();
-
-      // Get Service, need to check the field exists first.
-      $serviceEntities = $entity->hasField('field_service') ? $entity->get('field_service')->referencedEntities() : NULL;
-
-      // Set url to citizen ID.
-      $citizenIdUri = $config->get('citizen_id_start_url');
-      $drupalFormSiteVerifyPath = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
-      $redirectUrlEndForm = $components['scheme'] . '://' . $components['host'] . '/' . $drupalFormSiteVerifyPath . '?destination=' . $components['path'];
-
-      // Add the extra paremters.
-      $extraParams = $url->getOption('extra_paremeters');
-      if ($extraParams) {
-        $redirectUrlEndForm .= '&' . $extraParams;
-      }
-
-      // Extra paremeters for Citizen form.
-      $formName = $entity->label();
-      $serviceName = (is_array($serviceEntities) && !empty($serviceEntities) ? reset($serviceEntities)->label() : NULL);
-      $source = 'Drupal';
-
-      // Get the group ID if set.
-      $group = $url->getOption('group');
-
-      // Set up the query string.
-      $query = [
-        'RedirectUrlEndForm' => $redirectUrlEndForm,
-        'FormName' => $formName,
-        'ServiceName' => $serviceName,
-        'Source' => $source,
-      ];
-
-      // As group is optional, add it seperatly if present.
-      if ($group) {
-        $query['Group'] = $group;
-      }
-
-      // Set URI
-      $url = $url->fromUri($citizenIdUri, [
-        'query' => $query,
-      ]);
-
+    if ($url->getOption('use_citizenid') && $citizen_id_url) {
+      $return_url = $this->buildCitizenFormUrl($citizen_id_url, $url, $item);
     } elseif ($url->getOption('extra_paremeters')) {
       $query_options = explode('&', $url->getOption('extra_paremeters'));
       $query = [];
@@ -253,7 +219,10 @@ class FormStartFieldFormatter extends LinkFormatter {
         $param = explode('=', $param_pair);
         $query[$param[0]] = $param[1] ?? NULL;
       }
-      $url->setOption('query', $query);
+      $return_url = $url;
+      $return_url->setOption('query', $query);
+    } else {
+      $return_url = $url;
     }
 
     // Set attributes to render as a button.
@@ -261,11 +230,92 @@ class FormStartFieldFormatter extends LinkFormatter {
       'class' => implode(' ', [
         'services-cta__item',
         'button--single',
+        'button--next',
+        'margin-top-large',
       ]),
       'target' => '_blank',
     ];
-    $url->setOption('attributes', $attributes);
 
-    return $url;
+    // MyAccount extra parameters.
+    $module_handler = \Drupal::service('module_handler');
+    if ($module_handler->moduleExists('bhcc_myaccount') && $url->getOption('add_myaccount_url')) {
+      $myaccount_config = \Drupal::config('bhcc_myaccount.settings');
+      $myaccount_citizen_id_uri = $myaccount_config->get('myaccount_citizen_id_service_url');
+      if ($myaccount_citizen_id_uri) {
+        $myaccount_url = $this->buildCitizenFormUrl($myaccount_citizen_id_uri, $url, $item);
+        $attributes['data-myaccount-url'] = $myaccount_url->toString();
+      }
+    }
+
+    // Set the attributes.
+    $return_url->setOption('attributes', $attributes);
+
+    return $return_url;
+  }
+
+  /**
+   * Build CitizenID Form URL
+   *
+   * @param  string $citizen_form_url
+   *   Citizen form url to use as base url.
+   * @param  \Drupal\Core\Url $url
+   *   Current Url object to transform.
+   * @param  \Drupal\link\LinkItemInterface $item
+   *   Link field item.
+   * @return \Drupal\Core\Url
+   *   Url modified to direct through the citizen ID form service.
+   */
+  protected function buildCitizenFormUrl(string $citizen_form_url, Url $url, LinkItemInterface $item):Url {
+    $url->setAbsolute(TRUE);
+
+    // Get url components.
+    $components = parse_url($url->toString());
+
+    // Get formstart Config
+    $config = \Drupal::config('bhcc_form_start.settings');
+
+    // Get entity
+    $entity = $item->getEntity();
+
+    // Get Service, need to check the field exists first.
+    $serviceEntities = $entity->hasField('field_service') ? $entity->get('field_service')->referencedEntities() : NULL;
+
+    // Set url to citizen ID.
+    $drupalFormSiteVerifyPath = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
+    $redirectUrlEndForm = $components['scheme'] . '://' . $components['host'] . '/' . $drupalFormSiteVerifyPath . '?destination=' . $components['path'];
+
+    // Add the extra paremters.
+    $extraParams = $url->getOption('extra_paremeters');
+    if ($extraParams) {
+      $redirectUrlEndForm .= '&' . $extraParams;
+    }
+
+    // Extra paremeters for Citizen form.
+    $formName = $entity->label();
+    $serviceName = (is_array($serviceEntities) && !empty($serviceEntities) ? reset($serviceEntities)->label() : NULL);
+    $source = 'Drupal';
+
+    // Get the group ID if set.
+    $group = $url->getOption('group');
+
+    // Set up the query string.
+    $query = [
+      'RedirectUrlEndForm' => $redirectUrlEndForm,
+      'FormName' => $formName,
+      'ServiceName' => $serviceName,
+      'Source' => $source,
+    ];
+
+    // As group is optional, add it seperatly if present.
+    if ($group) {
+      $query['Group'] = $group;
+    }
+
+    // Set URI
+    $return_url = $url->fromUri($citizen_form_url, [
+      'query' => $query,
+    ]);
+
+    return $return_url;
   }
 }
