@@ -230,7 +230,6 @@ class FormStartFieldFormatter extends LinkFormatter {
       'class' => implode(' ', [
         'services-cta__item',
         'button--single',
-        'button--next',
         'margin-top-large',
       ]),
       'target' => '_blank',
