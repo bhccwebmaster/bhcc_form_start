@@ -2,6 +2,7 @@
 
 namespace Drupal\bhcc_form_start\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Template\Attribute;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
 use Drupal\Core\Url;
 use Drupal\link\LinkItemInterface;
@@ -62,12 +63,10 @@ class FormStartFieldFormatter extends LinkFormatter {
       $new_element[$delta] = [
         '#type' => 'container',
         '#id' => $html_id,
-        '#attributes' => [
-          'class' => [
-            'js-privacy-form-start',
-          ],
-        ],
       ];
+
+      $new_element[$delta]['#attributes'] = new Attribute();
+      $new_element[$delta]['#attributes']->addClass('js-privacy-form-start');
 
       // Create a new element with all info for privacy notice.
       // Text and checkbox.
@@ -75,23 +74,36 @@ class FormStartFieldFormatter extends LinkFormatter {
       // Add wrapper element for flex positioning.
       $new_element[$delta]['link'] = [
         '#type' => 'container',
-        '#attributes' => [
-          'class' => [
-            'flex',
-          ],
-        ],
       ];
+      $new_element[$delta]['link']['#attributes'] = new Attribute();
+      $new_element[$delta]['link']['#attributes']->addClass('flex');
 
       $new_element[$delta]['link']['elem'] = $element[$delta];
 
       // Add default link classes, disable the link by default.
-      $new_element[$delta]['link']['elem']['#options']['attributes']['class'] .= ' js-cta-button link-disabled js-link-disabled';
+      $new_element[$delta]['link']['elem']['#options']['attributes']['class'] = array_merge(
+        [
+          'js-cta-button',
+          'link-disabled',
+          'js-link-disabled',
+        ],
+        $new_element[$delta]['link']['elem']['#options']['attributes']['class']
+      );
 
       // Privacy notice text.
       $new_element[$delta]['privacy'] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => [
+            'line-height-larger',
+          ],
+        ],
+        '#weight' => -100,
+      ];
+
+      $new_element[$delta]['privacy'][] = [
         '#type' => 'markup',
         '#markup' => $message_to_display_with_privacy_notice,
-        '#weight' => -100,
       ];
 
       // Privacy notice checkbox.
@@ -106,8 +118,6 @@ class FormStartFieldFormatter extends LinkFormatter {
             'js-privacy-checkbox',
           ],
         ],
-        '#prefix' => '<div class="form no-padding">',
-        '#suffix' => '</div>',
       ];
 
       // Attach privacy notice JS.
@@ -222,14 +232,13 @@ class FormStartFieldFormatter extends LinkFormatter {
     }
 
     // Set attributes to render as a button.
-    $attributes = [
-      'class' => implode(' ', [
-        'services-cta__item',
-        'button--single',
-        'margin-top-large',
-      ]),
-      'target' => '_blank',
-    ];
+    $attributes = new Attribute();
+    $attributes->addClass([
+      'services-cta__item',
+      'button--single',
+      'margin-top-large',
+    ]);
+    $attributes->setAttribute('target', '_blank');
 
     // MyAccount extra parameters.
     $module_handler = \Drupal::service('module_handler');
@@ -243,7 +252,7 @@ class FormStartFieldFormatter extends LinkFormatter {
     }
 
     // Set the attributes.
-    $return_url->setOption('attributes', $attributes);
+    $return_url->setOption('attributes', $attributes->toArray());
 
     return $return_url;
   }
