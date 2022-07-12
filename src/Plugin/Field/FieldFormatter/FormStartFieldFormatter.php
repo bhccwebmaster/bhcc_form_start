@@ -4,13 +4,9 @@ namespace Drupal\bhcc_form_start\Plugin\Field\FieldFormatter;
 
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
 use Drupal\Core\Url;
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\link\LinkItemInterface;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\FormatterBase;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'form_start_field_formatter' formatter.
