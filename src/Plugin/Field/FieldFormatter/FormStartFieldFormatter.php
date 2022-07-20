@@ -132,7 +132,7 @@ class FormStartFieldFormatter extends LinkFormatter {
     $forms_status = $state->get(self::STATE_PREFIX . 'forms_status');
 
     // Deal with page cache (anon users won't see the change without this).
-    $element['#cache']['tags'][] = 'bhcc.form_start.status:' . $forms_status;
+    $element['#cache']['tags'][] = 'bhcc_form_start:status';
     \Drupal::service('page_cache_kill_switch')->trigger();
 
     // If forms are set to up just return the element unaltered.

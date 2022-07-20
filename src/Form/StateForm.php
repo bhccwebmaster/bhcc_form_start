@@ -4,6 +4,7 @@ namespace Drupal\bhcc_form_start\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,12 +29,20 @@ class StateForm extends FormBase {
   protected $configFactory;
 
   /**
+   * Drupal\Core\Cache\CacheTagsInvalidatorInterface definition.
+   *
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
+   */
+  protected $cacheTagsInvalidator;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->state = $container->get('state');
     $instance->configFactory = $container->get('config.factory');
+    $instance->cacheTagsInvalidator = $container->get('cache_tags.invalidator');
     return $instance;
   }
 
@@ -109,6 +118,9 @@ class StateForm extends FormBase {
         $this->state->set(self::STATE_PREFIX . $key, $value);
       }
     }
+
+    // Invalidate the form start cache tag, so forms show as en/disabled.
+    $this->cacheTagsInvalidator->invalidateTags(['bhcc_form_start:status']);
   }
 
 }
