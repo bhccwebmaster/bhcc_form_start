@@ -75,8 +75,6 @@ class FormStartFieldFormatter extends LinkFormatter {
       $new_element[$delta]['link'] = [
         '#type' => 'container',
       ];
-      $new_element[$delta]['link']['#attributes'] = new Attribute();
-      $new_element[$delta]['link']['#attributes']->addClass('flex');
 
       $new_element[$delta]['link']['elem'] = $element[$delta];
 
@@ -236,6 +234,7 @@ class FormStartFieldFormatter extends LinkFormatter {
     $attributes->addClass([
       'button',
       'button--action',
+      'button--single',
       'rounded',
       'margin-top-large',
     ]);
