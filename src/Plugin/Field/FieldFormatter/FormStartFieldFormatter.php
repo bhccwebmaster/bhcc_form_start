@@ -2,6 +2,7 @@
 
 namespace Drupal\bhcc_form_start\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\Attribute;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
 use Drupal\Core\Url;
@@ -32,7 +33,7 @@ class FormStartFieldFormatter extends LinkFormatter {
     // Build the original URLs.
     $element = parent::viewElements($items, $langcode);
 
-    // Handle private notice display.
+    // Handle private notice display and add arrow to button.
     foreach ($items as $delta => $item) {
 
       // Retrieve all the url/ information.
@@ -49,6 +50,33 @@ class FormStartFieldFormatter extends LinkFormatter {
       $use_privacy_notice = $url->getOption('use_privacy_notice');
       $message_to_display_with_privacy_notice = $url->getOption('message_to_display_with_privacy_notice')['value'] ?? NULL;
 
+      // Add arrow icon to start button.
+      $icon_render_array = [
+        '#type' => 'html_tag',
+        '#tag' => 'svg',
+        '#attributes' => [
+          'class' => [
+            'button__icon',
+            'button__icon--after',
+          ],
+          'xmlns' => 'http://www.w3.org/2000/svg',
+          'viewBox' => '0 0 13 22',
+          'width' => '13',
+          'height' => '22',
+          'aria-hidden' => 'true',
+          'aria-focusable' => 'false',
+        ],
+        'child' => [
+          '#type' => 'html_tag',
+          '#tag' => 'use',
+          '#attributes' => [
+            'xmlns:xlink' => 'http://www.w3.org/1999/xlink',
+            'xlink:href' => '#arrow-right',
+          ],
+        ],
+      ];
+      $icon_html = \Drupal::service('renderer')->renderPlain($icon_render_array);
+      $element[$delta]['#title'] = Markup::create($element[$delta]['#title'] . $icon_html);
     }
 
     // Does the user need to confirm that they have read a privacy statement
