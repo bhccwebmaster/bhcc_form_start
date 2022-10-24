@@ -64,7 +64,7 @@ class FormStartFieldFormatter extends LinkFormatter {
           'width' => '13',
           'height' => '22',
           'aria-hidden' => 'true',
-          'aria-focusable' => 'false',
+          'focusable' => 'false',
         ],
         'child' => [
           '#type' => 'html_tag',
