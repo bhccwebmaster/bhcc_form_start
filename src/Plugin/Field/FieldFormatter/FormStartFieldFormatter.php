@@ -70,7 +70,7 @@ class FormStartFieldFormatter extends LinkFormatter {
           '#type' => 'html_tag',
           '#tag' => 'use',
           '#attributes' => [
-            'xmlns:xlink' => 'http://www.w3.org/1999/xlink',
+            'xmlns' => 'http://www.w3.org/1999/xlink',
             'xlink:href' => '#arrow-right',
           ],
         ],
