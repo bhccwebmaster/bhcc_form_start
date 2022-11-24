@@ -81,7 +81,7 @@ class FormStartFieldFormatter extends LinkFormatter {
 
     // Does the user need to confirm that they have read a privacy statement
     // by clicking a checkbox?
-    if ($use_privacy_notice) {
+    if (!empty($use_privacy_notice)) {
 
       // Set a unique ID.
       $html_id = Html::getUniqueId('bhcc-form-start-with-privacy');
