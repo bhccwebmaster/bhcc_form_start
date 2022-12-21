@@ -192,7 +192,7 @@ class FormStartFieldFormatter extends LinkFormatter {
         // just remove the form button.
         $url->setAbsolute(TRUE);
         $form_url_components = parse_url($url->toString());
-        $form_url_base = $form_url_components['host'] . $form_url_components['path'];
+        $form_url_base = $form_url_components['host'] ?? '' . $form_url_components['path'] ?? '';
 
         // Loop through each form site url to compare as substr.
         $found_form_url = FALSE;
@@ -314,7 +314,7 @@ class FormStartFieldFormatter extends LinkFormatter {
 
     // Set url to citizen ID.
     $drupalFormSiteVerifyPath = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
-    $redirectUrlEndForm = $components['scheme'] . '://' . $components['host'] . '/' . $drupalFormSiteVerifyPath . '?destination=' . $components['path'];
+    $redirectUrlEndForm = $components['scheme'] . '://' . $components['host'] . '/' . $drupalFormSiteVerifyPath . '?destination=' . ($components['path'] ?? '');
 
     // Add the extra paremters.
     $extraParams = $url->getOption('extra_paremeters');
