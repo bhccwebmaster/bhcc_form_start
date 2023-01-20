@@ -9,6 +9,9 @@ use Drupal\Core\Url;
 use Drupal\link\LinkItemInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\NodeInterface;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Plugin implementation of the 'form_start_field_formatter' formatter.
@@ -309,8 +312,8 @@ class FormStartFieldFormatter extends LinkFormatter {
     // Get entity
     $entity = $item->getEntity();
 
-    // Get Service, need to check the field exists first.
-    $serviceEntities = $entity->hasField('field_service') ? $entity->get('field_service')->referencedEntities() : NULL;
+    // Get Service if set.
+    $serviceEntity = self::getServiceEntity($entity);
 
     // Set url to citizen ID.
     $drupalFormSiteVerifyPath = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
@@ -323,8 +326,25 @@ class FormStartFieldFormatter extends LinkFormatter {
     }
 
     // Extra paremeters for Citizen form.
+
+    // Form name.
     $formName = $entity->label();
-    $serviceName = (is_array($serviceEntities) && !empty($serviceEntities) ? reset($serviceEntities)->label() : NULL);
+
+    // If the form start button is on a paragraph, fetch the entity it is on.
+    if ($entity instanceof ParagraphInterface) {
+      $parent = $entity;
+      while ($parent instanceof ParagraphInterface) {
+        $parent = $parent->getParentEntity();
+      }
+      if ($parent instanceof EntityInterface) {
+        $formName = $parent->label();
+      }
+    }
+
+    // Add service name.
+    $serviceName = ($serviceEntity instanceof NodeInterface ? $serviceEntity->label() : NULL);
+
+    // Set source as Drupal.
     $source = 'Drupal';
 
     // Get the group ID if set.
@@ -349,5 +369,50 @@ class FormStartFieldFormatter extends LinkFormatter {
     ]);
 
     return $return_url;
+  }
+
+  /**
+   * Get the service entity if one is set
+   * 
+   * Done statically so the dependency on bhcc_localgov_services_api
+   * can be made optional.
+   * 
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity the form start button is on (node / paragraph).
+   * @return \Drupal\node\NodeInterface|NULL
+   *   The service entity, or NULL if not set.
+   */
+  public static function getServiceEntity(EntityInterface $entity) {
+    $service_entity = NULL;
+    if (\Drupal::hasService('bhcc_localgov_services_api.service_helper')) {
+
+      /** @var \Drupal\bhcc_localgov_services_api\ServiceHelper $service_helper*/
+      $service_helper = \Drupal::service('bhcc_localgov_services_api.service_helper');
+      $service = NULL;
+
+      // If node.
+      if ($entity instanceof NodeInterface) {
+        $service = $service_helper->serviceFromNode($entity);
+      } 
+      // If paragraph, load based on the parent.
+      elseif ($entity instanceof ParagraphInterface) {
+
+        // Loop up through parents to find root parent entity.
+        $parent = $entity;
+        while ($parent instanceof ParagraphInterface) {
+          $parent = $parent->getParentEntity();
+        }
+        if ($parent instanceof NodeInterface) {
+          $service = $service_helper->serviceFromNode($parent);
+        } 
+      }
+    }
+
+    // Long instance check to load the service node as the module might not
+    // be installed to use a use statement.
+    if ($service instanceof \Drupal\bhcc_localgov_services_api\ServiceHelper) {
+      $service_entity = $service->getServiceLanding()->getNode();
+    }
+    return $service_entity;
   }
 }
