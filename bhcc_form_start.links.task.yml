@@ -9,3 +9,10 @@ bhcc_form_start.bhcc_form_start_state_form:
   route_name: bhcc_form_start.bhcc_form_start_state_form
   base_route: bhcc_form_start.bhcc_form_start_state_form
   weight: 1
+
+# Form start groups collection
+entity.bhcc_form_start_group.collection:
+  title: 'Form start groups'
+  route_name: entity.bhcc_form_start_group.collection
+  base_route: bhcc_form_start.bhcc_form_start_state_form
+  weight: 3

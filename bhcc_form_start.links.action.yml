@@ -1,0 +1,5 @@
+entity.bhcc_form_start_group.add_form:
+  route_name: entity.bhcc_form_start_group.add_form
+  title: 'Add form start group'
+  appears_on:
+    - entity.bhcc_form_start_group.collection

@@ -4,3 +4,7 @@ access form start configuration:
 toggle state of form start links:
   title: 'Toggle state of form start links'
   restrict access: true
+
+# Forms start group entity
+manage form start groups:
+  title: 'Create and edit form start groups'

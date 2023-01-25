@@ -11,3 +11,11 @@ bhcc_form_start.bhcc_form_start_state_form:
   description: 'Toggle form start forms.'
   parent: system.admin_config_services
   weight: 99
+
+# Form start groups collection
+entity.bhcc_form_start_group.collection:
+  title: 'Form start groups'
+  route_name: entity.bhcc_form_start_group.collection
+  description: 'Manage form start groups'
+  parent: bhcc_form_start.bhcc_form_start_state_form
+  weight: 99
