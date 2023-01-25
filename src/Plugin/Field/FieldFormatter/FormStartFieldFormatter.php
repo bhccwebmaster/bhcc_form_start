@@ -2,6 +2,7 @@
 
 namespace Drupal\bhcc_form_start\Plugin\Field\FieldFormatter;
 
+use Drupal\bhcc_localgov_services_api\ServiceHelper;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\Attribute;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
@@ -101,7 +102,6 @@ class FormStartFieldFormatter extends LinkFormatter {
 
       // Create a new element with all info for privacy notice.
       // Text and checkbox.
-
       // Add wrapper element for flex positioning.
       $new_element[$delta]['link'] = [
         '#type' => 'container',
@@ -138,7 +138,6 @@ class FormStartFieldFormatter extends LinkFormatter {
       // Privacy notice checkbox.
       $new_element[$delta]['privacy_checkbox'] = [
         '#type' => 'checkbox',
-        //'#title' => $this->t('Please confirm that you have read the privacy statement'),
         '#title' => $this->t('I have read and understand'),
         '#id' => $html_id .= '--checkbox',
         '#weight' => -90,
@@ -172,13 +171,13 @@ class FormStartFieldFormatter extends LinkFormatter {
     }
 
     // Form urls to check.
-    // @TODO replace these with config / state versions.
+    // @todo replace these with config / state versions.
     $form_site_urls = [
       'forms.brighton-hove.gov.uk',
       'formsstg.brighton-hove.gov.uk',
       'formsdev.brighton-hove.gov.uk',
       'citizenform.brighton-hove.gov.uk',
-      'workplace.brighton-hove.gov.uk/form/'
+      'workplace.brighton-hove.gov.uk/form/',
     ];
 
     // Loop through each item to check if it needs to be replaced.
@@ -218,7 +217,8 @@ class FormStartFieldFormatter extends LinkFormatter {
               '#suffix' => '</div>',
             ];
             $set_disabled_msg = TRUE;
-          } else {
+          }
+          else {
             unset($element[$delta]);
           }
         }
@@ -244,10 +244,10 @@ class FormStartFieldFormatter extends LinkFormatter {
     // If so rewrite the url to the citizenform format,
     // else return plain url.
     $citizen_id_url = $config->get('citizen_id_start_url');
-    $elementValue = $item->getValue();
     if ($url->getOption('use_citizenid') && $citizen_id_url) {
       $return_url = $this->buildCitizenFormUrl($citizen_id_url, $url, $item);
-    } elseif ($url->getOption('extra_paremeters')) {
+    }
+    elseif ($url->getOption('extra_paremeters')) {
       $query_options = explode('&', $url->getOption('extra_paremeters'));
       $query = [];
       foreach ($query_options as $param_pair) {
@@ -256,7 +256,8 @@ class FormStartFieldFormatter extends LinkFormatter {
       }
       $return_url = $url;
       $return_url->setOption('query', $query);
-    } else {
+    }
+    else {
       $return_url = $url;
     }
 
@@ -289,14 +290,15 @@ class FormStartFieldFormatter extends LinkFormatter {
   }
 
   /**
-   * Build CitizenID Form URL
+   * Build CitizenID Form URL.
    *
-   * @param  string $citizen_form_url
+   * @param string $citizen_form_url
    *   Citizen form url to use as base url.
-   * @param  \Drupal\Core\Url $url
+   * @param \Drupal\Core\Url $url
    *   Current Url object to transform.
-   * @param  \Drupal\link\LinkItemInterface $item
+   * @param \Drupal\link\LinkItemInterface $item
    *   Link field item.
+   *
    * @return \Drupal\Core\Url
    *   Url modified to direct through the citizen ID form service.
    */
@@ -306,29 +308,28 @@ class FormStartFieldFormatter extends LinkFormatter {
     // Get url components.
     $components = parse_url($url->toString());
 
-    // Get formstart Config
+    // Get formstart Config.
     $config = \Drupal::config('bhcc_form_start.settings');
 
-    // Get entity
+    // Get entity.
     $entity = $item->getEntity();
 
     // Get Service if set.
-    $serviceEntity = self::getServiceEntity($entity);
+    $service_entity = self::getServiceEntity($entity);
 
     // Set url to citizen ID.
-    $drupalFormSiteVerifyPath = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
-    $redirectUrlEndForm = $components['scheme'] . '://' . $components['host'] . '/' . $drupalFormSiteVerifyPath . '?destination=' . ($components['path'] ?? '');
+    $drupal_form_site_verify_path = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
+    $redirect_url_end_form = $components['scheme'] . '://' . $components['host'] . '/' . $drupal_form_site_verify_path . '?destination=' . ($components['path'] ?? '');
 
     // Add the extra paremters.
-    $extraParams = $url->getOption('extra_paremeters');
-    if ($extraParams) {
-      $redirectUrlEndForm .= '&' . $extraParams;
+    $extra_params = $url->getOption('extra_paremeters');
+    if ($extra_params) {
+      $redirect_url_end_form .= '&' . $extra_params;
     }
 
     // Extra paremeters for Citizen form.
-
     // Form name.
-    $formName = $entity->label();
+    $form_name = $entity->label();
 
     // If the form start button is on a paragraph, fetch the entity it is on.
     if ($entity instanceof ParagraphInterface) {
@@ -337,12 +338,12 @@ class FormStartFieldFormatter extends LinkFormatter {
         $parent = $parent->getParentEntity();
       }
       if ($parent instanceof EntityInterface) {
-        $formName = $parent->label();
+        $form_name = $parent->label();
       }
     }
 
     // Add service name.
-    $serviceName = ($serviceEntity instanceof NodeInterface ? $serviceEntity->label() : NULL);
+    $service_name = ($service_entity instanceof NodeInterface ? $service_entity->label() : NULL);
 
     // Set source as Drupal.
     $source = 'Drupal';
@@ -352,9 +353,9 @@ class FormStartFieldFormatter extends LinkFormatter {
 
     // Set up the query string.
     $query = [
-      'RedirectUrlEndForm' => $redirectUrlEndForm,
-      'FormName' => $formName,
-      'ServiceName' => $serviceName,
+      'RedirectUrlEndForm' => $redirect_url_end_form,
+      'FormName' => $form_name,
+      'ServiceName' => $service_name,
       'Source' => $source,
     ];
 
@@ -363,7 +364,7 @@ class FormStartFieldFormatter extends LinkFormatter {
       $query['Group'] = $group;
     }
 
-    // Set URI
+    // Set URI.
     $return_url = $url->fromUri($citizen_form_url, [
       'query' => $query,
     ]);
@@ -372,14 +373,15 @@ class FormStartFieldFormatter extends LinkFormatter {
   }
 
   /**
-   * Get the service entity if one is set
-   * 
+   * Get the service entity if one is set.
+   *
    * Done statically so the dependency on bhcc_localgov_services_api
    * can be made optional.
-   * 
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity the form start button is on (node / paragraph).
-   * @return \Drupal\node\NodeInterface|NULL
+   *
+   * @return \Drupal\node\NodeInterface|null
    *   The service entity, or NULL if not set.
    */
   public static function getServiceEntity(EntityInterface $entity) {
@@ -393,7 +395,7 @@ class FormStartFieldFormatter extends LinkFormatter {
       // If node.
       if ($entity instanceof NodeInterface) {
         $service = $service_helper->serviceFromNode($entity);
-      } 
+      }
       // If paragraph, load based on the parent.
       elseif ($entity instanceof ParagraphInterface) {
 
@@ -404,15 +406,16 @@ class FormStartFieldFormatter extends LinkFormatter {
         }
         if ($parent instanceof NodeInterface) {
           $service = $service_helper->serviceFromNode($parent);
-        } 
+        }
       }
     }
 
     // Long instance check to load the service node as the module might not
     // be installed to use a use statement.
-    if ($service instanceof \Drupal\bhcc_localgov_services_api\ServiceHelper) {
+    if ($service instanceof ServiceHelper) {
       $service_entity = $service->getServiceLanding()->getNode();
     }
     return $service_entity;
   }
+
 }

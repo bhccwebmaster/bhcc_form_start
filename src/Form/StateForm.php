@@ -4,11 +4,10 @@ namespace Drupal\bhcc_form_start\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class StateForm.
+ * Class Form start state form.
  */
 class StateForm extends FormBase {
 
@@ -61,19 +60,13 @@ class StateForm extends FormBase {
       '#type' => 'fieldset',
       '#title' => $this->t('Form start state'),
     ];
-    $form['on_off'] ['forms_status'] = [
+    $form['on_off']['forms_status'] = [
       '#type' => 'radios',
       '#title' => $this->t('Forms Status'),
       '#options' => [1 => $this->t('On'), 0 => $this->t('Off')],
       '#default_value' => $this->state->get(self::STATE_PREFIX . 'forms_status') ?? 1,
       '#weight' => '0',
     ];
-    // $form['disable_following_forms'] = [
-    //   '#type' => 'checkboxes',
-    //   '#title' => $this->t('Disable following forms'),
-    //   '#options' => ['Webforms site' => $this->t('Webforms site')],
-    //   '#weight' => '0',
-    // ];
     $default_message = $this->state->get(self::STATE_PREFIX . 'message_to_display_when_form_off');
     $form['on_off']['message_to_display_when_form_off'] = [
       '#type' => 'text_format',
@@ -89,16 +82,6 @@ class StateForm extends FormBase {
     ];
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    foreach ($form_state->getValues() as $key => $value) {
-      // @TODO: Validate fields.
-    }
-    parent::validateForm($form, $form_state);
   }
 
   /**
