@@ -34,6 +34,27 @@ class FormStartFieldWidget extends LinkWidget {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
 
     $form_values = $items[$delta]->getValue();
+
+    // Get form start groups.
+    $form_group_storage = \Drupal::service('entity_type.manager')
+      ->getStorage('bhcc_form_start_group');
+    $form_start_group_ids = $form_group_storage->getQuery()
+      ->execute();
+    $form_start_groups = array_map(function($id) use ($form_group_storage) {
+      return $form_group_storage->load($id)->label();
+    }, $form_start_group_ids);
+
+    // Form start group select.
+    $element['form_start_group'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Form start group'),
+      '#options' => $form_start_groups,
+      '#default_value' => $form_values['options']['form_start_group'] ?? NULL,
+      '#empty_option' => $this->t('- No group -'),
+      '#empty_value' => '',
+    ];
+
+    // CitizenID form elements.
     $element['use_citizenid'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('This form requires the Citizen ID service.'),
@@ -87,6 +108,12 @@ class FormStartFieldWidget extends LinkWidget {
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     parent::massageFormValues($values, $form, $form_state);
     foreach ($values as &$value) {
+
+      // Store the form start group.
+      if (isset($value['form_start_group'])) {
+        $value['options']['form_start_group'] = $value['form_start_group'];
+      }
+
       // Set the value of use Citizen ID to the form options array.
       if (isset($value['use_citizenid'])) {
         $value['options']['use_citizenid'] = $value['use_citizenid'];
