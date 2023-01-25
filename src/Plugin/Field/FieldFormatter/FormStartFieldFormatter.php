@@ -155,9 +155,16 @@ class FormStartFieldFormatter extends LinkFormatter {
       $element[$delta] = $new_element[$delta];
     }
 
-    // Check if the url matches one in which forms are switched off.
+    // Get the global forms start status.
     $state = \Drupal::service('state');
     $forms_status = $state->get(self::STATE_PREFIX . 'forms_status');
+
+    // Get the form group status.
+    $form_start_group = $url->getOption('form_start_group');
+    $form_group_status = 1;
+    if ($form_start_group) {
+      $form_group_status = $state->get(self::STATE_PREFIX . 'forms_status__' . $form_start_group);
+    }
 
     // Deal with page cache (anon users won't see the change without this).
     $element['#cache']['tags'][] = 'bhcc_form_start:status';
@@ -166,7 +173,8 @@ class FormStartFieldFormatter extends LinkFormatter {
     // If forms are set to up just return the element unaltered.
     // Check explicitly if the forms are disabled, as this could be NULL
     // if the form status is not defined.
-    if ($forms_status !== '0') {
+    // includes check for the form start group status.
+    if ($forms_status !== '0' && $form_group_status !== '0') {
       return $element;
     }
 
