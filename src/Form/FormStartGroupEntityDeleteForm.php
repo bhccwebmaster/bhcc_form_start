@@ -5,11 +5,30 @@ namespace Drupal\bhcc_form_start\Form;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Builds the form to delete mta-sts.txt record entities.
+ * Builds the form to delete form start group entities.
  */
 class FormStartGroupEntityDeleteForm extends EntityConfirmFormBase {
+
+  const STATE_PREFIX = 'bhcc_form_state.';
+
+  /**
+   * Drupal\Core\State\StateInterface definition.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->state = $container->get('state');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -36,6 +55,11 @@ class FormStartGroupEntityDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
+    // Delete any form status states of this form group.
+    $id = $this->entity->id();
+    $this->state->delete(self::STATE_PREFIX . 'forms_status__' . $id);
+
     $this->entity->delete();
 
     $this->messenger()->addMessage(
