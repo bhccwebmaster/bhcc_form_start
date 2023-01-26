@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
 
 /**
- * Provides routes for form start group record entities.
+ * Provides routes for Form start group record entities.
  *
  * @see Drupal\Core\Entity\Routing\AdminHtmlRouteProvider
  * @see Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider

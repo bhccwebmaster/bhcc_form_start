@@ -23,7 +23,7 @@ class FormStartGroupEntityForm extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Group name'),
       '#default_value' => $form_start_group->label(),
-      '#description' => $this->t('A unique name for this form start group.'),
+      '#description' => $this->t('A unique name for this Form start group.'),
     ];
 
     $form['id'] = [
@@ -37,7 +37,7 @@ class FormStartGroupEntityForm extends EntityForm {
         ],
         'source' => ['name'],
       ],
-      '#description' => $this->t('A unique machine-readable name for this mta-sts. It must only contain lowercase letters, numbers, and underscores.'),
+      '#description' => $this->t('A unique machine-readable name for this Form start group. It must only contain lowercase letters, numbers, and underscores.'),
       '#disabled' => !$form_start_group->isNew(),
     ];
 

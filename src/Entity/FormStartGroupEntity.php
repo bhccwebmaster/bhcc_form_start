@@ -5,7 +5,7 @@ namespace Drupal\bhcc_form_start\Entity;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 
 /**
- * Defines the mta-sts.txt record entity.
+ * Defines the Form start group entity.
  *
  * @ConfigEntityType(
  *   id = "bhcc_form_start_group",

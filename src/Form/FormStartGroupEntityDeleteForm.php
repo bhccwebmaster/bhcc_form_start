@@ -8,7 +8,7 @@ use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Builds the form to delete form start group entities.
+ * Builds the form to delete Form start group entities.
  */
 class FormStartGroupEntityDeleteForm extends EntityConfirmFormBase {
 
