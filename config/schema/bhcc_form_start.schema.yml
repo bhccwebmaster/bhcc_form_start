@@ -1,0 +1,29 @@
+bhcc_form_start.settings:
+  type: config_entity
+  label: 'Form start settings'
+  mapping:
+    citizen_id_start_url:
+      type: string
+      label: 'Citizen ID start page URL'
+    citizen_id_drupal_form_site_verify_path:
+      type: string
+      label: 'Drupal Form site path.'
+field.formatter.settings.bhcc_form_start_field_formatter:
+  type: mapping
+  label: 'Link format settings'
+  mapping:
+    trim_length:
+      type: integer
+      label: 'Trim link text length'
+    url_only:
+      type: boolean
+      label: 'URL only'
+    url_plain:
+      type: boolean
+      label: 'Show URL as plain text'
+    rel:
+      type: string
+      label: 'Add rel="nofollow" to links'
+    target:
+      type: string
+      label: 'Open link in new window'
