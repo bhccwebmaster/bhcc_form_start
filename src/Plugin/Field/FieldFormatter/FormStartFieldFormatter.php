@@ -81,119 +81,116 @@ class FormStartFieldFormatter extends LinkFormatter {
       ];
       $icon_html = \Drupal::service('renderer')->renderPlain($icon_render_array);
       $element[$delta]['#title'] = Markup::create($element[$delta]['#title'] . $icon_html);
-    }
 
-    // Does the user need to confirm that they have read a privacy statement
-    // by clicking a checkbox?
-    if (!empty($use_privacy_notice)) {
+      // Does the user need to confirm that they have read a privacy statement
+      // by clicking a checkbox?
+      if (!empty($use_privacy_notice)) {
 
-      // Set a unique ID.
-      $html_id = Html::getUniqueId('bhcc-form-start-with-privacy');
+        // Set a unique ID.
+        $html_id = Html::getUniqueId('bhcc-form-start-with-privacy');
 
-      // Create a container class for the privacy notice info so that we can
-      // access it in javascript.
-      $new_element[$delta] = [
-        '#type' => 'container',
-        '#id' => $html_id,
-      ];
+        // Create a container class for the privacy notice info so that we can
+        // access it in javascript.
+        $new_element[$delta] = [
+          '#type' => 'container',
+          '#id' => $html_id,
+        ];
 
-      $new_element[$delta]['#attributes'] = new Attribute();
-      $new_element[$delta]['#attributes']->addClass('js-privacy-form-start');
+        $new_element[$delta]['#attributes'] = new Attribute();
+        $new_element[$delta]['#attributes']->addClass('js-privacy-form-start');
 
-      // Create a new element with all info for privacy notice.
-      // Text and checkbox.
-      // Add wrapper element for flex positioning.
-      $new_element[$delta]['link'] = [
-        '#type' => 'container',
-      ];
+        // Create a new element with all info for privacy notice.
+        // Text and checkbox.
+        // Add wrapper element for flex positioning.
+        $new_element[$delta]['link'] = [
+          '#type' => 'container',
+        ];
 
-      $new_element[$delta]['link']['elem'] = $element[$delta];
+        $new_element[$delta]['link']['elem'] = $element[$delta];
 
-      // Add default link classes, disable the link by default.
-      $new_element[$delta]['link']['elem']['#options']['attributes']['class'] = array_merge(
-        [
-          'js-cta-button',
-          'link-disabled',
-          'js-link-disabled',
-        ],
-        $new_element[$delta]['link']['elem']['#options']['attributes']['class']
-      );
-
-      // Privacy notice text.
-      $new_element[$delta]['privacy'] = [
-        '#type' => 'container',
-        '#attributes' => [
-          'class' => [
-            'line-height-larger',
+        // Add default link classes, disable the link by default.
+        $new_element[$delta]['link']['elem']['#options']['attributes']['class'] = array_merge(
+          [
+            'js-cta-button',
+            'link-disabled',
+            'js-link-disabled',
           ],
-        ],
-        '#weight' => -100,
-      ];
+          $new_element[$delta]['link']['elem']['#options']['attributes']['class']
+        );
 
-      $new_element[$delta]['privacy'][] = [
-        '#type' => 'markup',
-        '#markup' => $message_to_display_with_privacy_notice,
-      ];
-
-      // Privacy notice checkbox.
-      $new_element[$delta]['privacy_checkbox'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('I have read and understand'),
-        '#id' => $html_id .= '--checkbox',
-        '#weight' => -90,
-        '#attributes' => [
-          'class' => [
-            'js-privacy-checkbox',
+        // Privacy notice text.
+        $new_element[$delta]['privacy'] = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => [
+              'line-height-larger',
+            ],
           ],
-        ],
+          '#weight' => -100,
+        ];
+
+        $new_element[$delta]['privacy'][] = [
+          '#type' => 'markup',
+          '#markup' => $message_to_display_with_privacy_notice,
+        ];
+
+        // Privacy notice checkbox.
+        $new_element[$delta]['privacy_checkbox'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('I have read and understand'),
+          '#id' => $html_id .= '--checkbox',
+          '#weight' => -90,
+          '#attributes' => [
+            'class' => [
+              'js-privacy-checkbox',
+            ],
+          ],
+        ];
+
+        // Attach privacy notice JS.
+        $new_element[$delta]['#attached']['library'][] = 'bhcc_form_start/privacy_notice';
+
+        // Set the element delta to this new element.
+        $element[$delta] = $new_element[$delta];
+      }
+
+      // Get the global forms start status.
+      $state = \Drupal::service('state');
+      $forms_status = $state->get(self::STATE_PREFIX . 'forms_status');
+
+      // Get the form group status.
+      $form_start_group = $url->getOption('form_start_group');
+      $form_group_status = 1;
+      if ($form_start_group) {
+        $form_group_status = $state->get(self::STATE_PREFIX . 'forms_status__' . $form_start_group);
+      }
+
+      // Deal with page cache (anon users won't see the change without this).
+      $element['#cache']['tags'][] = 'bhcc_form_start:status';
+      \Drupal::service('page_cache_kill_switch')->trigger();
+
+      // If forms are set to up just return the element unaltered.
+      // Check explicitly if the forms are disabled, as this could be NULL
+      // if the form status is not defined.
+      // includes check for the form start group status.
+      if ($forms_status !== '0' && $form_group_status !== '0') {
+        return $element;
+      }
+
+      // Form urls to check.
+      // @todo replace these with config / state versions.
+      $form_site_urls = [
+        'forms.brighton-hove.gov.uk',
+        'formsstg.brighton-hove.gov.uk',
+        'formsdev.brighton-hove.gov.uk',
+        'citizenform.brighton-hove.gov.uk',
+        'workplace.brighton-hove.gov.uk/form/',
       ];
 
-      // Attach privacy notice JS.
-      $new_element[$delta]['#attached']['library'][] = 'bhcc_form_start/privacy_notice';
+      // Check if each form needs to be disabled.
+      $set_disabled_msg = FALSE;
 
-      // Set the element delta to this new element.
-      $element[$delta] = $new_element[$delta];
-    }
-
-    // Get the global forms start status.
-    $state = \Drupal::service('state');
-    $forms_status = $state->get(self::STATE_PREFIX . 'forms_status');
-
-    // Get the form group status.
-    $form_start_group = $url->getOption('form_start_group');
-    $form_group_status = 1;
-    if ($form_start_group) {
-      $form_group_status = $state->get(self::STATE_PREFIX . 'forms_status__' . $form_start_group);
-    }
-
-    // Deal with page cache (anon users won't see the change without this).
-    $element['#cache']['tags'][] = 'bhcc_form_start:status';
-    \Drupal::service('page_cache_kill_switch')->trigger();
-
-    // If forms are set to up just return the element unaltered.
-    // Check explicitly if the forms are disabled, as this could be NULL
-    // if the form status is not defined.
-    // includes check for the form start group status.
-    if ($forms_status !== '0' && $form_group_status !== '0') {
-      return $element;
-    }
-
-    // Form urls to check.
-    // @todo replace these with config / state versions.
-    $form_site_urls = [
-      'forms.brighton-hove.gov.uk',
-      'formsstg.brighton-hove.gov.uk',
-      'formsdev.brighton-hove.gov.uk',
-      'citizenform.brighton-hove.gov.uk',
-      'workplace.brighton-hove.gov.uk/form/',
-    ];
-
-    // Loop through each item to check if it needs to be replaced.
-    $set_disabled_msg = FALSE;
-    foreach ($items as $delta => $item) {
-
-      // Get the original form url (to account for citizenID).
-      $url = $item->getUrl() ?: NULL;
+      // Check against the original url (not the url generated in buildUrl).
       if ($url) {
 
         // If the host matches a forms site, and a message has not been set,
