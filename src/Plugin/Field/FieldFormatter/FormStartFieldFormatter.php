@@ -413,13 +413,12 @@ class FormStartFieldFormatter extends LinkFormatter {
           $service = $service_helper->serviceFromNode($parent);
         }
       }
+      // Check the service is an instance of service helper.
+      if ($service instanceof ServiceHelper) {
+        $service_entity = $service->getServiceLanding()->getNode();
+      }
     }
 
-    // Long instance check to load the service node as the module might not
-    // be installed to use a use statement.
-    if ($service instanceof ServiceHelper) {
-      $service_entity = $service->getServiceLanding()->getNode();
-    }
     return $service_entity;
   }
 
