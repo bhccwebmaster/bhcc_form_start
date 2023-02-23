@@ -199,8 +199,7 @@ class FormStartFieldFormatter extends LinkFormatter {
         // just remove the form button.
         $url->setAbsolute(TRUE);
         $form_url_components = parse_url($url->toString());
-        $form_url_base = $form_url_components['host'] ?? '' . $form_url_components['path'] ?? '';
-
+        $form_url_base = ($form_url_components['host'] ?? '') . ($form_url_components['path'] ?? '');
         // Loop through each form site url to compare as substr.
         $found_form_url = FALSE;
         foreach ($form_site_urls as $form_site_url) {
