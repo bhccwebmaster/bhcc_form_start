@@ -184,7 +184,7 @@ class FormStartFieldFormatter extends LinkFormatter {
         'formsstg.brighton-hove.gov.uk',
         'formsdev.brighton-hove.gov.uk',
         'citizenform.brighton-hove.gov.uk',
-        'workplace.brighton-hove.gov.uk',
+        'workplace.brighton-hove.gov.uk/form/',
       ];
 
       // Check if each form needs to be disabled.
