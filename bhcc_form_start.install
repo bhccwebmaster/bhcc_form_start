@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * BHCC_form_start update hooks.
+ */
+
+/**
+ * Install the form start group entity.
+ */
+function bhcc_form_start_update_8001() {
+  \Drupal::entityDefinitionUpdateManager()->installEntityType(
+    \Drupal::entityTypeManager()->getDefinition('bhcc_form_start_group')
+  );
+}

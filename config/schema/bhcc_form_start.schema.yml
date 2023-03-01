@@ -27,3 +27,15 @@ field.formatter.settings.bhcc_form_start_field_formatter:
     target:
       type: string
       label: 'Open link in new window'
+bhcc_form_start.bbcc_form_start_group.*:
+  type: config_entity
+  label: 'Form start group'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    name:
+      type: label
+      label: 'Name'
+    uuid:
+      type: string
