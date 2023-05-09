@@ -36,7 +36,7 @@
 
   Drupal.behaviors.bhcc_form_start_privacy = {
     attach: function (context, settings) {
-      $('.js-privacy-form-start', context).once('bhcc_form_start_privacy').each(function () {
+      $(once('bhcc_form_start_privacy', '.js-privacy-form-start', context)).each(function () {
         privacy_checkbox_behaviours($(this));
       });
     }
