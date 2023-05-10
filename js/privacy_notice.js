@@ -1,4 +1,8 @@
-(function ($) {
+/**
+ * @file
+ * Privacy notice
+ */
+(function ($, once) {
 
   /**
    * Privacy notice checkbox behaviour.
@@ -42,4 +46,4 @@
     }
   }
 
-})(jQuery);
+})(jQuery, once);
