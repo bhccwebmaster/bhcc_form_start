@@ -5,3 +5,4 @@ privacy_notice:
   dependencies:
     - core/drupal
     - core/jquery
+    - core/once
