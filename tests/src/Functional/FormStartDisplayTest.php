@@ -180,6 +180,33 @@ class FormStartDisplayTest extends BrowserTestBase {
     // Test empty form start button does not cause WSOD.
     $this->drupalGet($node[4]->toUrl()->toString());
     $this->assertSession()->statusCodeEquals(Response::HTTP_OK);
+
+    // Message is turned on and displaying on user/login pages.
+    $this->drupalLogin($this->adminUser);
+    $this->drupalGet('/admin/config/services/form-start');
+    $default_message = 'Login message - ' . $this->randomMachineName(32);
+    $this->submitForm([
+      'message_status' => 1,
+      'message_to_display_when_form_off[value]' => $default_message,
+    ], 'Start');
+    $this->drupalLogout();
+    $node_url = $node->toUrl()->toString();
+    $this->drupalGet($node_url);
+    $this->assertSession()->pageTextContains($default_message);
+
+    // Message is turned off and not displaying on user/login pages.
+    $this->drupalLogin($this->adminUser);
+    $this->drupalGet('/admin/config/services/form-start');
+    $default_message = 'Login message -' . $this->randomMachineName(32);
+    $this->submitForm([
+      'message_status' => 0,
+      'message_to_display_when_form_off[value]' => $default_message,
+    ], 'Start');
+    $this->drupalLogout();
+    $node_url = $node->toUrl()->toString();
+    $this->drupalGet($node_url);
+    $this->assertSession()->pageTextNotContains($default_message);
+
   }
 
 }
