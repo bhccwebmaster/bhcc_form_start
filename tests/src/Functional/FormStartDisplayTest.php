@@ -237,7 +237,7 @@ class FormStartDisplayTest extends BrowserTestBase {
       'message_to_display_when_form_off[value]' => $message,
     ], 'Submit');
 
-    // Step 8 Go to the form start page and check that the message doesn't display.
+    // Step 8 Go to the form start page and check the message doesn't display.
     $this->assertSession()->pageTextNotContains($message);
   }
 
