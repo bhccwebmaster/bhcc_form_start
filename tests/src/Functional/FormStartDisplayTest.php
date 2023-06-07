@@ -46,56 +46,6 @@ class FormStartDisplayTest extends BrowserTestBase {
    */
   public function testFormStartButton() {
 
-    // Create the Admin user.
-    $this->adminUser = $this->drupalCreateUser([
-      'administer nodes',
-      'bypass node access',
-    ]);
-    $this->drupalLogin($this->adminUser);
-
-    // Set up a content type with a link,
-    // setting the display to form start button.
-    $this->createContentType(['type' => 'form_start']);
-
-    $field_storage = FieldStorageConfig::create([
-      'field_name' => 'form_start_button',
-      'entity_type' => 'node',
-      'type' => 'link',
-    ]);
-
-    $field_storage->save();
-
-    $field = FieldConfig::create([
-      'field_storage' => $field_storage,
-      'bundle' => 'form_start',
-      'settings' => [
-        'title' => DRUPAL_DISABLED,
-        'link_type' => LinkItemInterface::LINK_GENERIC,
-      ],
-    ]);
-
-    $field->save();
-
-    $display = $this->container->get('entity_type.manager')
-      ->getStorage('entity_view_display')
-      ->load('node.form_start.default');
-    $link_component = [
-      'type' => 'bhcc_form_start_field_formatter',
-      'label' => 'hidden',
-      'settings' => [
-        'trim_length' => 80,
-        'url_only' => FALSE,
-        'url_plain' => FALSE,
-        'rel' => '',
-        'target' => '',
-      ],
-      'third_party_settings' => [],
-      'weight' => 102,
-      'region' => 'content',
-    ];
-    $display->setComponent('form_start_button', $link_component);
-    $display->save();
-
     // Test form links.
     $form_links = [
       // Standard link.
@@ -183,44 +133,112 @@ class FormStartDisplayTest extends BrowserTestBase {
   }
 
   /**
-   * Test the state form.
+   * {@inheritDoc}
    */
-  public function testStateForm() {
-
-    $node = \Drupal::entityTypeManager()->getStorage('node')->load('node_url');
+  public function setUp() : void {
+    // Set up the test here.
+    parent::setUp();
 
     // Create the Admin user.
     $this->adminUser = $this->drupalCreateUser([
       'administer nodes',
       'bypass node access',
     ]);
-
-    // Check that the form start button is on.
     $this->drupalLogin($this->adminUser);
+
+    // Set up a content type with a link,
+    // setting the display to form start button.
+    $this->createContentType(['type' => 'form_start']);
+
+    $field_storage = FieldStorageConfig::create([
+      'field_name' => 'form_start_button',
+      'entity_type' => 'node',
+      'type' => 'link',
+    ]);
+
+    $field_storage->save();
+
+    $field = FieldConfig::create([
+      'field_storage' => $field_storage,
+      'bundle' => 'form_start',
+      'settings' => [
+        'title' => DRUPAL_DISABLED,
+        'link_type' => LinkItemInterface::LINK_GENERIC,
+      ],
+    ]);
+
+    $field->save();
+
+    $display = $this->container->get('entity_type.manager')
+      ->getStorage('entity_view_display')
+      ->load('node.form_start.default');
+    $link_component = [
+      'type' => 'bhcc_form_start_field_formatter',
+      'label' => 'hidden',
+      'settings' => [
+        'trim_length' => 80,
+        'url_only' => FALSE,
+        'url_plain' => FALSE,
+        'rel' => '',
+        'target' => '',
+      ],
+      'third_party_settings' => [],
+      'weight' => 102,
+      'region' => 'content',
+    ];
+    $display->setComponent('form_start_button', $link_component);
+    $display->save();
+  }
+
+  /**
+   * Test form down message displays.
+   */
+  public function testFormsDownMessage() {
+
+    // Step 1 Create a form link.
+    $form_links = [
+      // Link to form start.
+      'title' => 'Start ' . $this->randomMachineName(8),
+      'uri' => 'https://forms.brighton-hove.gov.uk/form/' . $this->randomMachineName(8),
+    ];
+
+    // Step 2 Create and test each form start button.
+    foreach ($form_links as $form_link) {
+      $node[] = $this->createNode([
+        'title' => 'Form start - ' . $this->randomMachineName(16),
+        'type' => 'form_start',
+        'form_start_button' => $form_link,
+        'status' => NodeInterface::PUBLISHED,
+      ]);
+    }
+
+    // Step 3 Go to the node URL.
+    $this->drupalGet($node->toUrl());
+
+    // Step 4 Test that the form start button is displayed.
+    $this->assertSession()->buttonExists('Start');
+
+    // Step 5 Go to the state form and explicitly switch off forms.
     $this->drupalGet('/admin/config/services/form-start');
-    $message = 'Default message -' . $this->randomMachineName(32);
+    $message = 'Default message - ' . $this->randomMachineName(32);
     $this->submitForm([
       'forms_status' => 1,
       'message_to_display_when_form_off[value]' => $message,
-    ], 'op');
-    $this->drupalLogout();
-    $node_url = $node->toUrl()->toString();
-    $this->drupalGet($node_url);
+    ], 'Submit');
+
+    // Step 6 Test that the forms message displays.
     $this->assertSession()->pageTextContains($message);
 
-    // Check that the form start button is on.
-    $this->drupalLogin($this->adminUser);
+    // Step 7 Go back to the state form and explicitly switch on forms.
     $this->drupalGet('/admin/config/services/form-start');
     $message = 'Default message -' . $this->randomMachineName(32);
     $this->submitForm([
       'forms_status' => 0,
       'message_to_display_when_form_off[value]' => $message,
-    ], 'op');
-    $this->drupalLogout();
-    $node_url = $node->toUrl()->toString();
-    $this->drupalGet($node_url);
-    $this->assertSession()->pageTextNotContains($message);
+    ], 'Submit');
 
+    // Step 8 Go to the form start page and check that the message doesn't display.
+    $this->assertSession()->pageTextNotContains($message);
   }
 
 }
