@@ -22,31 +22,3 @@ function bhcc_form_start_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
-
-/**
- * Implements hook_form_alter().
- */
-function bhcc_form_start_form_alter(&$form, &$form_state, $form_id) {
-  $message_field = \Drupal::state()->get('bhcc_form_start.message_to_display_when_form_off');
-  $message_toggle = \Drupal::state()->get('bhcc_form_start.forms_status');
-
-  if (isset($message_field['value'])  && ($message_toggle == '1')) {
-
-    $form['message_container'] = [
-      '#type' => 'container',
-      '#weight' => -10,
-      '#attributes' => [
-        'class' => [
-          'messages',
-          'messages--info',
-        ],
-      ],
-    ];
-
-    $form['message_container']['value'] = [
-      '#type' => 'markup',
-      '#markup' => $message_field['value'],
-    ];
-  }
-  $form['#cache']['tags'][] = 'bhcc_form_start:message_to_display_when_form_off';
-}

@@ -180,32 +180,46 @@ class FormStartDisplayTest extends BrowserTestBase {
     // Test empty form start button does not cause WSOD.
     $this->drupalGet($node[4]->toUrl()->toString());
     $this->assertSession()->statusCodeEquals(Response::HTTP_OK);
+  }
 
-    // Message is turned on and displaying on user/login pages.
+  /**
+   * Test the state form.
+   */
+  public function testStateForm() {
+
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load('node_url');
+
+    // Create the Admin user.
+    $this->adminUser = $this->drupalCreateUser([
+      'administer nodes',
+      'bypass node access',
+    ]);
+
+    // Check that the form start button is on.
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('/admin/config/services/form-start');
-    $default_message = 'Login message - ' . $this->randomMachineName(32);
+    $message = 'Default message -' . $this->randomMachineName(32);
     $this->submitForm([
-      'message_status' => 1,
-      'message_to_display_when_form_off[value]' => $default_message,
-    ], 'Start');
+      'forms_status' => 1,
+      'message_to_display_when_form_off[value]' => $message,
+    ], 'op');
     $this->drupalLogout();
     $node_url = $node->toUrl()->toString();
     $this->drupalGet($node_url);
-    $this->assertSession()->pageTextContains($default_message);
+    $this->assertSession()->pageTextContains($message);
 
-    // Message is turned off and not displaying on user/login pages.
+    // Check that the form start button is on.
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('/admin/config/services/form-start');
-    $default_message = 'Login message -' . $this->randomMachineName(32);
+    $message = 'Default message -' . $this->randomMachineName(32);
     $this->submitForm([
-      'message_status' => 0,
-      'message_to_display_when_form_off[value]' => $default_message,
-    ], 'Start');
+      'forms_status' => 0,
+      'message_to_display_when_form_off[value]' => $message,
+    ], 'op');
     $this->drupalLogout();
     $node_url = $node->toUrl()->toString();
     $this->drupalGet($node_url);
-    $this->assertSession()->pageTextNotContains($default_message);
+    $this->assertSession()->pageTextNotContains($message);
 
   }
 
