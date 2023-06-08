@@ -226,20 +226,22 @@ class FormStartDisplayTest extends BrowserTestBase {
     $this->drupalGet('/admin/config/services/form-start');
     $default_message = 'Message to display when form unavailable -' . $this->randomMachineName(32);
     $this->submitForm([
-      'forms_status' => 1,
+      'forms_status' => 0,
       'message_to_display_when_form_off[value]' => $default_message,
     ], 'Submit');
 
     // Step 6 Test that the forms message displays.
+    $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->pageTextContains($default_message);
 
     // Step 7 Go back to the state form and explicitly switch on forms.
     $this->drupalGet('/admin/config/services/form-start');
     $default_message = 'Message to display when form unavailable -' . $this->randomMachineName(32);
     $this->submitForm([
-      'forms_status' => 0,
+      'forms_status' => 1,
       'message_to_display_when_form_off[value]' => $default_message,
     ], 'Submit');
+    $this->drupalGet($node->toUrl()->toString());
 
     // Step 8 Go to the form start page and check the message doesn't display.
     $this->assertSession()->pageTextNotContains('message_to_display_when_form_off[value]');
