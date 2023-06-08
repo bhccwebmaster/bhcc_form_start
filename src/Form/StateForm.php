@@ -129,7 +129,7 @@ class StateForm extends FormBase {
       'form_id',
       'form_token',
       'op',
-      'Submit',
+      'submit',
     ];
     foreach ($form_state->getValues() as $key => $value) {
       if (!in_array($key, $ignore_keys)) {
