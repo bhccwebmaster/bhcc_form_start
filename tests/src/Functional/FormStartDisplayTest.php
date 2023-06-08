@@ -233,6 +233,8 @@ class FormStartDisplayTest extends BrowserTestBase {
     // Step 6 Test that the forms message displays.
     $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->pageTextContains($default_message);
+    $this->assertSession()->linkNotExists($form_link['title']);
+    $this->assertSession()->linkByHrefNotExists($form_link['uri']);
 
     // Step 7 Go back to the state form and explicitly switch on forms.
     $this->drupalGet('/admin/config/services/form-start');
@@ -241,10 +243,12 @@ class FormStartDisplayTest extends BrowserTestBase {
       'forms_status' => 1,
       'message_to_display_when_form_off[value]' => $default_message,
     ], 'Submit');
-    $this->drupalGet($node->toUrl()->toString());
 
     // Step 8 Go to the form start page and check the message doesn't display.
-    $this->assertSession()->pageTextNotContains('message_to_display_when_form_off[value]');
+    $this->drupalGet($node->toUrl()->toString());
+    $this->assertSession()->pageTextNotContains($default_message);
+    $this->assertSession()->linkExists($form_link['title']);
+    $this->assertSession()->linkByHrefExists($form_link['uri']);
   }
 
 }
