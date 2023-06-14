@@ -2,9 +2,9 @@
 
 namespace Drupal\bhcc_form_start\Plugin\Field\FieldWidget;
 
-use Drupal\link\Plugin\Field\FieldWidget\LinkWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\link\Plugin\Field\FieldWidget\LinkWidget;
 
 /**
  * Plugin implementation of the 'bhcc_form_start_field_widget' widget.

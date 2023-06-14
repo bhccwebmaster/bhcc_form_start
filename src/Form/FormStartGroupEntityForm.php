@@ -3,8 +3,8 @@
 namespace Drupal\bhcc_form_start\Form;
 
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Class Form start group entity add / edit form.
