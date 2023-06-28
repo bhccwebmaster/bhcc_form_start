@@ -39,6 +39,7 @@ class FormStartFieldWidget extends LinkWidget {
     $form_group_storage = \Drupal::service('entity_type.manager')
       ->getStorage('bhcc_form_start_group');
     $form_start_group_ids = $form_group_storage->getQuery()
+      ->accessCheck(TRUE)
       ->execute();
     $form_start_groups = array_map(function ($id) use ($form_group_storage) {
       return $form_group_storage->load($id)->label();
