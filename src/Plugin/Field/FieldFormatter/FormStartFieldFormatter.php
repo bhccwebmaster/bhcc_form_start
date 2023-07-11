@@ -323,7 +323,7 @@ class FormStartFieldFormatter extends LinkFormatter {
 
     // Set url to citizen ID.
     $drupal_form_site_verify_path = trim($config->get('citizen_id_drupal_form_site_verify_path'), " /\t\n\r\0\x0B");
-    $redirect_url_end_form = $components['scheme'] . '://' . $components['host'] . '/' . $drupal_form_site_verify_path . '?destination=' . ($components['path'] ?? '');
+    urlencode($redirect_url_end_form = $components['scheme'] . '://' . $components['host'] . '/' . $drupal_form_site_verify_path . '?destination=' . ($components['path'] ?? ''));
 
     // Add the extra paremters.
     $extra_params = $url->getOption('extra_paremeters');
