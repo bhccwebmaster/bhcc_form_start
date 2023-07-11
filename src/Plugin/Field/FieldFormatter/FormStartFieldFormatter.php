@@ -355,6 +355,9 @@ class FormStartFieldFormatter extends LinkFormatter {
     // Get the group ID if set.
     $group = $url->getOption('group');
 
+    // Assigning the redirect urlencode.
+    $redirect_url_end_form = urlencode($redirect_url_end_form);
+
     // Set up the query string.
     // Adding urlencoding even though Drupal will also encode,
     // This is because mendix handle the incoming destination parameter.
