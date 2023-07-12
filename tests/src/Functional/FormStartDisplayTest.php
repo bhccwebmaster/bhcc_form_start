@@ -69,6 +69,8 @@ class FormStartDisplayTest extends BrowserTestBase {
 
     $field_storage->save();
 
+    define('DRUPAL_DISABLED', '');
+
     $field = FieldConfig::create([
       'field_storage' => $field_storage,
       'bundle' => 'form_start',
@@ -173,9 +175,10 @@ class FormStartDisplayTest extends BrowserTestBase {
     $citizenform_url = 'https://citizenform.brighton-hove.gov.uk/link/CitizenFormGeneric';
     $citizenid_verify_url = $components['scheme'] . '://' . $components['host'] . '/' . 'citizenid-verify';
     $form_path = $components['path'];
+    $redirectUrlEndForm = urlencode($citizenid_verify_url . '?destination=' . $form_path,);
     $citizenid_href = Url::fromUri($citizenform_url, [
       'query' => [
-        'RedirectUrlEndForm' => $citizenid_verify_url . '?destination=' . $form_path,
+        'RedirectUrlEndForm' => $redirectUrlEndForm,
       ],
     ])->toString();
     $this->assertSession()->linkByHrefExists($citizenid_href, 0);
