@@ -173,10 +173,14 @@ class FormStartDisplayTest extends BrowserTestBase {
     $citizenform_url = 'https://citizenform.brighton-hove.gov.uk/link/CitizenFormGeneric';
     $citizenid_verify_url = $components['scheme'] . '://' . $components['host'] . '/' . 'citizenid-verify';
     $form_path = $components['path'];
-    $redirectUrlEndForm = urlencode($citizenid_verify_url . '?destination=' . $form_path,);
+
+    // Note that redirect_url_end_form needs to be urlencoded in the
+    // query string for Mendix.
+    $redirect_url_end_form = urlencode($citizenid_verify_url . '?destination=' . $form_path,);
+
     $citizenid_href = Url::fromUri($citizenform_url, [
       'query' => [
-        'RedirectUrlEndForm' => $redirectUrlEndForm,
+        'RedirectUrlEndForm' => $redirect_url_end_form,
       ],
     ])->toString();
     $this->assertSession()->linkByHrefExists($citizenid_href, 0);
