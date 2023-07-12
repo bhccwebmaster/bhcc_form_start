@@ -69,8 +69,6 @@ class FormStartDisplayTest extends BrowserTestBase {
 
     $field_storage->save();
 
-    define('DRUPAL_DISABLED', '');
-
     $field = FieldConfig::create([
       'field_storage' => $field_storage,
       'bundle' => 'form_start',
