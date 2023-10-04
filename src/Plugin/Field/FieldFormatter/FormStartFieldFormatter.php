@@ -54,6 +54,9 @@ class FormStartFieldFormatter extends LinkFormatter {
       $use_privacy_notice = $url->getOption('use_privacy_notice');
       $message_to_display_with_privacy_notice = $url->getOption('message_to_display_with_privacy_notice')['value'] ?? NULL;
 
+      // Add aria-label attribute for accessibility.
+      $element[$delta]['#options']['attributes']['aria-label'] = $element[$delta]['#title'] . ' (opens in a new tab)';
+
       // Add arrow icon to start button.
       $icon_render_array = [
         '#type' => 'html_tag',
@@ -129,9 +132,10 @@ class FormStartFieldFormatter extends LinkFormatter {
           '#weight' => -100,
         ];
 
-        $new_element[$delta]['privacy'][] = [
-          '#type' => 'markup',
-          '#markup' => $message_to_display_with_privacy_notice,
+        $new_element[$delta]['privacy']['child'] = [
+          '#type' => 'processed_text',
+          '#text' => $message_to_display_with_privacy_notice,
+          '#format' => 'ckeditor5',
         ];
 
         // Privacy notice checkbox.
