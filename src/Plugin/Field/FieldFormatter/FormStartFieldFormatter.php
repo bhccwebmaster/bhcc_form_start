@@ -53,6 +53,7 @@ class FormStartFieldFormatter extends LinkFormatter {
       // Get privacy notice.
       $use_privacy_notice = $url->getOption('use_privacy_notice');
       $message_to_display_with_privacy_notice = $url->getOption('message_to_display_with_privacy_notice')['value'] ?? NULL;
+      $message_to_display_with_privacy_notice_format = $url->getOption('message_to_display_with_privacy_notice')['value']['format'] ?? NULL;
 
       // Add aria-label attribute for accessibility.
       $element[$delta]['#options']['attributes']['aria-label'] = $element[$delta]['#title'] . ' (opens in a new tab)';
@@ -135,7 +136,7 @@ class FormStartFieldFormatter extends LinkFormatter {
         $new_element[$delta]['privacy']['child'] = [
           '#type' => 'processed_text',
           '#text' => $message_to_display_with_privacy_notice,
-          '#format' => 'ckeditor5',
+          '#format' => $message_to_display_with_privacy_notice_format,
         ];
 
         // Privacy notice checkbox.

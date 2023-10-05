@@ -32,6 +32,7 @@ class FormStartDisplayTest extends BrowserTestBase {
     'node',
     'link',
     'bhcc_form_start',
+    'filter',
   ];
 
   /**
@@ -133,9 +134,8 @@ class FormStartDisplayTest extends BrowserTestBase {
         'options' => [
           'use_privacy_notice' => 1,
           'message_to_display_with_privacy_notice' => [
-            '#type' => 'processed_text',
-            '#text' => $this->randomMachineName(256),
-            '#format' => 'ckeditor5',
+            'value' => $this->randomMachineName(256),
+            'format' => 'plain_text',
           ],
         ],
       ],
